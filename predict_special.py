@@ -1,5 +1,6 @@
+from PIL import Image, ImageEnhance
 import torch
-from torchvision import datasets, transforms
+from torchvision import transforms
 import matplotlib.pyplot as plt
 from torch import nn
 
@@ -17,9 +18,8 @@ class SimpleNN(nn.Module):
         x = torch.relu(self.fc2(x))
         return self.fc3(x)                 # No activation here; loss function will handle it
 
-
 def load_model_weights(model, path="mnist_model_weights.pth"):
-    model.load_state_dict(torch.load(path, weights_only=True))  # 'weights_only' to avoid warning
+    model.load_state_dict(torch.load(path, weights_only=True))
     model.eval()  # Set the model to evaluation mode
 
 # Predict a single image and return predicted label
@@ -31,27 +31,33 @@ def predict_single_image(model, image):
     return predicted.item()
 
 def main():
-    # Load test data
-    data_path = r'C:\Users\squar\FOR_JUPYTER\mnist\data'
-    transform = transforms.Compose([transforms.ToTensor()])
-    test_data = datasets.MNIST(root=data_path, train=False, download=True, transform=transform)
-    
     # Initialize and load model weights
     model = SimpleNN()
     load_model_weights(model, "mnist_model_weights.pth")
     print("Model weights loaded successfully.")
 
-    # Loop through a range of indexes to predict
-    for index in range(10):  # You can set any range you like
-        image, label = test_data[index]
-        predicted_label = predict_single_image(model, image)
-        print(f"Index {index} - Actual Label: {label}, Predicted Label: {predicted_label}")
+    # Load and preprocess the custom "6" image
+    image_path = "outside_number.png"
+    image = Image.open(image_path).convert("L")  # Convert to grayscale
 
-        # Display only the last image in the range
-        if index == 9:  # Change '9' to the last index in your range
-            plt.imshow(image.squeeze(), cmap='gray')
-            plt.title(f"Actual Label: {label}, Predicted Label: {predicted_label}")
-            plt.show()
+    # Enhance contrast to better match MNIST images
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(2.0)  # Increase contrast
+
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,))  # Normalize as per MNIST's training normalization
+    ])
+    image_tensor = transform(image).unsqueeze(0)  # Add batch dimension
+
+    # Predict the label for the custom image
+    predicted_label = predict_single_image(model, image_tensor)
+    print(f"Predicted Label for outside_number.png: {predicted_label}")
+
+    # Display the image and prediction result
+    plt.imshow(image, cmap='gray')
+    plt.title(f"Predicted Label: {predicted_label}")
+    plt.show()
 
 if __name__ == "__main__":
     main()

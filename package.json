@@ -1,0 +1,17 @@
+{
+  "name": "mnist",
+  "version": "1.0.0",
+  "description": "https://github.com/mulefish/FOR_JUPYTER",
+  "main": "js_training.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "brain.js": "^2.0.0-beta.24",
+    "mnist": "^1.1.0",
+    "onnxruntime-node": "^1.20.0",
+    "pngjs": "^7.0.0"
+  }
+}

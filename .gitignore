@@ -1,5 +1,8 @@
 data/ 
-
+mnist_model_weights.json
+mnist_model_weights.pth 
+node_modules
+mnist_image_6.png
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
